@@ -21,7 +21,7 @@ type TokenType =
 	| "False"
 	| "Null";
 
-const literalTokensMap = {
+const literalTokensMap: { [key: string]: Token } = {
 	'{': {
 		type: 'BraceOpen',
 		value: '{'
@@ -174,7 +174,7 @@ export const parseObject = (tokens: Array<Token>, currentIdx: number): JSONObjec
 		throw new Error(`Invalid JSON Object at pos ${tokens.length - 1}`)
 	}
 
-	const result = {}
+	const result: JSONObject = {}
 
 	// eat up the first {
 	currentIdx++
