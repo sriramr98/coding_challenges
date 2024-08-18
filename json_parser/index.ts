@@ -50,7 +50,7 @@ const literalTokensMap: { [key: string]: Token } = {
 
 const literals = ['{', '}', '[', ']', ':', ',']
 
-interface Token {
+export interface Token {
 	type: TokenType
 	value: string
 }
