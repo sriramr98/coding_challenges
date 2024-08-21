@@ -1,27 +1,25 @@
 import test, { describe } from "node:test";
 import assert from "node:assert";
-
-import { tokenize } from "..";
-import { type } from "node:os";
+import { JSONTokenizer } from "..";
 
 describe('test tokenizer success scenarios', () => {
 	test('tokenizer returns valid tokens for empty object', () => {
-		const tokens = tokenize("{}")
+		const tokens = JSONTokenizer.tokenize("{}")
 		assert.deepStrictEqual(tokens, [{ type: 'BraceOpen', value: '{' }, { type: 'BraceClose', value: '}' }])
 	})
 
 	test('tokenizer returns valid tokens for empty array', () => {
-		const tokens = tokenize("[]")
+		const tokens = JSONTokenizer.tokenize("[]")
 		assert.deepStrictEqual(tokens, [{ type: 'BracketOpen', value: '[' }, { type: 'BracketClose', value: ']' }])
 	})
 
 	test('tokenizer ignores whitespaces between tokens', () => {
-		const tokens = tokenize(" { } ")
+		const tokens = JSONTokenizer.tokenize(" { } ")
 		assert.deepStrictEqual(tokens, [{ type: 'BraceOpen', value: '{' }, { type: 'BraceClose', value: '}' }])
 	})
 
 	test('tokenizer parses valid key value as string', () => {
-		const tokens = tokenize('{ "key": "value" }')
+		const tokens = JSONTokenizer.tokenize('{ "key": "value" }')
 		assert.deepStrictEqual(tokens, [
 			{ type: 'BraceOpen', value: '{' },
 			{ type: 'String', value: 'key' },
@@ -32,7 +30,7 @@ describe('test tokenizer success scenarios', () => {
 	})
 
 	test('tokenizer parses valid key string value number', () => {
-		const tokens = tokenize('{ "key": 123 }')
+		const tokens = JSONTokenizer.tokenize('{ "key": 123 }')
 		assert.deepStrictEqual(tokens, [
 			{ type: 'BraceOpen', value: '{' },
 			{ type: 'String', value: 'key' },
@@ -43,7 +41,7 @@ describe('test tokenizer success scenarios', () => {
 	})
 
 	test('tokenizer parses valid key string value true', () => {
-		const tokens = tokenize('{ "key": true }')
+		const tokens = JSONTokenizer.tokenize('{ "key": true }')
 		assert.deepStrictEqual(tokens, [
 			{ type: 'BraceOpen', value: '{' },
 			{ type: 'String', value: 'key' },
@@ -54,7 +52,7 @@ describe('test tokenizer success scenarios', () => {
 	})
 
 	test('tokenizer parses valid key string value false', () => {
-		const tokens = tokenize('{ "key": false }')
+		const tokens = JSONTokenizer.tokenize('{ "key": false }')
 		assert.deepStrictEqual(tokens, [
 			{ type: 'BraceOpen', value: '{' },
 			{ type: 'String', value: 'key' },
@@ -65,7 +63,7 @@ describe('test tokenizer success scenarios', () => {
 	})
 
 	test('tokenizer parses valid key string value null', () => {
-		const tokens = tokenize('{ "key": null }')
+		const tokens = JSONTokenizer.tokenize('{ "key": null }')
 		assert.deepStrictEqual(tokens, [
 			{ type: 'BraceOpen', value: '{' },
 			{ type: 'String', value: 'key' },
@@ -78,7 +76,7 @@ describe('test tokenizer success scenarios', () => {
 
 describe('test tokenizer failure scenarios', () => {
 	test('tokenizer throws error for unknown token', () => {
-		assert.throws(() => tokenize('{;}'), {
+		assert.throws(() => JSONTokenizer.tokenize('{;}'), {
 			name: 'Error',
 			message: 'Invalid character encountered: ;'
 		})
