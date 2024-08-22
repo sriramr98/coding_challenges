@@ -13,13 +13,22 @@ export class JSONParser {
 		// reset to 0 so that if parse is called, we'll start from the beginning of tokens
 		this.idx = 0
 
+		let result: Json
+
 		if (tokens[0].type === 'BraceOpen') {
-			return this.parseObject(tokens)
+			result = this.parseObject(tokens)	
 		} else if (tokens[0].type === 'BracketOpen') {
-			return this.parseList(tokens)
+			result = this.parseList(tokens)
 		} else {
-			throw new Error(`Invalid token: ${tokens[0].value}`)
+			throw new Error(`Invalid start of JSON - Expected '[' or '{' but got ${tokens[0].value}`)
+		}	
+
+		// there shouldn't be any more tokens since this should signify the end of the object
+		if (this.idx !== tokens.length) {
+			throw new Error(`Invalid JSON - Expected end of JSON, got ${tokens[this.idx]?.value || null}`)
 		}
+
+		return result
 	}
 
 	parseObject(tokens: Array<Token>): JSONObject {
@@ -27,7 +36,7 @@ export class JSONParser {
 			throw new Error('Invalid JSON Object at pos 0')
 		}
 		if (tokens[this.idx].type !== 'BraceOpen') {
-			throw new Error(`Invalid JSON Object at pos ${this.idx}`)
+			throw new Error(`Invalid JSON Object - Expected '{', got '${tokens[this.idx].value}'`)
 		}
 
 		const result: JSONObject = {}
@@ -35,16 +44,22 @@ export class JSONParser {
 		// eat up the first {
 		this.idx++
 
+		// if it follows up with } return empty
+		if (tokens[this.idx].type === 'BraceClose') {
+			this.idx++
+			return result
+		}
+
 		while (this.idx < tokens.length && tokens[this.idx]?.type !== 'BraceClose') {
 			const currToken = tokens[this.idx]
 			if (currToken.type !== 'String') {
-				throw new Error(`Invalid JSON Object at pos ${this.idx}`)
+				throw new Error(`Invalid JSON Object - Expected token of type String, got type ${currToken.type}`)
 			}
 
 			const key = currToken.value
 
 			if (tokens[++this.idx].type !== 'Colon') {
-				throw new Error(`Expected ':' at pos ${this.idx}`)
+				throw new Error(`Invalid JSON Object - Expected ':', got ${tokens[this.idx].value}`)
 			}
 
 			this.idx++
@@ -60,7 +75,7 @@ export class JSONParser {
 				this.idx++
 				return result
 			} else {
-				throw new Error(`Expected ',' or '}' at pos ${this.idx}`)
+				throw new Error(`Invalid JSON Object - Expected ',' or '}', got ${tokens[this.idx]?.value || null}`)
 			}
 		}
 
@@ -94,7 +109,7 @@ export class JSONParser {
 			case "BracketOpen":
 				return this.parseList(tokens)
 			default:
-				throw new Error(`Unexpected token ${token.value} at pos ${this.idx}`)
+				throw new Error(`Invalid JSON Value - Expected a valid value for key but got ${token.value}`)
 		}
 	}
 }
