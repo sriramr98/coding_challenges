@@ -148,6 +148,130 @@ describe('parser returns json for valid nested json', () => {
 			}
 		})
 	})
+
+	test('parser returns valid object for two level nested json object', () => {
+		const tokens: Array<Token> = [
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'abc' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },	
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey2' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BraceClose', value: '}' }
+		]
+		const result = parser.parse(tokens)
+		assert.deepStrictEqual(result, {
+			"strKey": "abc",
+			"objKey": {
+				"strKey": "strValue",
+				"numKey": 1234,
+				"objKey2": {
+					"strKey": "strValue",
+					"numKey": 1234
+				}
+			}
+		})
+	})
+
+	test('parser returns valid object for two root keys with two level nested json object', () => {
+		const tokens: Array<Token> = [
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'abc' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },	
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey2' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey1' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },	
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'objKey2' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'strKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'strValue' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: '1234' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BraceClose', value: '}' }
+		]
+		const result = parser.parse(tokens)
+		assert.deepStrictEqual(result, {
+			"strKey": "abc",
+			"objKey": {
+				"strKey": "strValue",
+				"numKey": 1234,
+				"objKey2": {
+					"strKey": "strValue",
+					"numKey": 1234
+				}
+			},
+			"objKey1": {
+				"strKey": "strValue",
+				"numKey": 1234,
+				"objKey2": {
+					"strKey": "strValue",
+					"numKey": 1234
+				}
+			}
+		})
+	})
 })
 
 
