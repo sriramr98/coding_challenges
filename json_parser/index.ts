@@ -33,7 +33,7 @@ export class JSONParser {
 
 	parseObject(tokens: Array<Token>): JSONObject {
 		if (tokens.length < 2) {
-			throw new Error('Invalid JSON Object at pos 0')
+			throw new Error(`Invalid JSON Object - Expected atleast two tokens got ${tokens.length}`)
 		}
 		if (tokens[this.idx].type !== 'BraceOpen') {
 			throw new Error(`Invalid JSON Object - Expected '{', got '${tokens[this.idx].value}'`)
@@ -83,7 +83,43 @@ export class JSONParser {
 	}
 
 	parseList(tokens: Array<Token>): JSONArray {
-		return []
+		if (tokens.length < 2) {
+			throw new Error(`Invalid JSON Array - Expected atleast two tokens, got ${tokens.length}`)
+		}
+
+		if (tokens[this.idx].type !== 'BracketOpen') {
+			throw new Error(`Invalid JSON Array - Expected '[', got '${tokens[this.idx].value}'`)
+		}
+
+		// eat up [
+		this.idx++
+
+		// if it immediately follows up with ], return empty array
+		if (tokens[this.idx]?.type === 'BracketClose') {
+			this.idx++
+			return []
+		}
+
+		const result: JSONArray = []
+
+		while (this.idx < tokens.length && tokens[this.idx]?.type !== 'BracketClose') {
+			const value = this.parseValue(tokens)
+			result.push(value)
+
+			// Value should be followed by either a comma or a closing bracket
+			if (tokens[this.idx]?.type === 'Comma') {
+				// eat up the , and start loop from the token after
+				this.idx++
+			} else if (tokens[this.idx]?.type === 'BracketClose') {
+				// we've reached the end of the array
+				this.idx++
+				return result
+			} else {
+				throw new Error(`Invalid JSON Array - Expected ',' or ']', got ${tokens[this.idx]?.value || null}`)
+			}
+		}
+
+		return result
 	}
 
 	parseValue = (tokens: Array<Token>): JSONValue => {
