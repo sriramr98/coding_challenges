@@ -72,6 +72,66 @@ describe('test tokenizer success scenarios', () => {
 			{ type: 'BraceClose', value: '}' }
 		])
 	})
+
+	test('tokenizer parses valid json with multiline string', () => {
+		const tokens = JSONTokenizer.tokenize(`{
+			"key": "value",
+			"numKey": 123
+		}`)
+
+		assert.deepStrictEqual(tokens, [
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'key' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: "value" },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'numKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'Number', value: "123" },
+			{ type: 'BraceClose', value: '}' }
+		])
+	})
+
+	test('tokenizer parses valid json with multiline nested json', () => {
+		const tokens = JSONTokenizer.tokenize(`{
+			"key": {
+				"nestedKey": "nestedValue"
+			},
+			"listKey": [
+				{ "key1": "value1" },
+				{ "key2": "value2" }	
+			]
+		}`)
+
+		assert.deepStrictEqual(tokens, [
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'key' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'nestedKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'nestedValue' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'String', value: 'listKey' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'BracketOpen', value: '[' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'key1' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'value1' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'Comma', value: ',' },
+			{ type: 'BraceOpen', value: '{' },
+			{ type: 'String', value: 'key2' },
+			{ type: 'Colon', value: ':' },
+			{ type: 'String', value: 'value2' },
+			{ type: 'BraceClose', value: '}' },
+			{ type: 'BracketClose', value: ']' },
+			{ type: 'BraceClose', value: '}' }
+		])
+
+	})
 })
 
 describe('test tokenizer failure scenarios', () => {
