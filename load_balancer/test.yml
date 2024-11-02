@@ -1,0 +1,12 @@
+http_version: 1
+protocol: http
+balance_strategy: round-robin
+port: 3000
+health_check:
+  path: /health
+  sucess_codes:
+    - 200
+    - 201
+  healthy_treshold: 5
+  unhealthy_treshold: 5
+  timeout: 20
