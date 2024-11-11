@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Header struct {
@@ -28,6 +30,7 @@ type HttpRes struct {
 
 type Server struct {
 	client    http.Client
+	id        string
 	host      string
 	port      int
 	isHealthy bool
@@ -40,6 +43,7 @@ func NewServer(host string, port int, timeout time.Duration) *Server {
 		},
 		host: host,
 		port: port,
+		id:   uuid.NewString(),
 	}
 }
 
@@ -76,13 +80,19 @@ func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 }
 
 func (s *Server) MarkIsUnHealthy() {
+	log.Printf("Server %s is unhealthy", s.id)
 	s.isHealthy = false
 }
 
 func (s *Server) MarkIsHealthy() {
+	log.Printf("Server %s is healthy", s.id)
 	s.isHealthy = true
 }
 
 func (s *Server) IsHealthy() bool {
 	return s.isHealthy
+}
+
+func (s *Server) IsUnHealthy() bool {
+	return !s.isHealthy
 }
