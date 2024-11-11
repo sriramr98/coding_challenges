@@ -2,7 +2,12 @@ package main
 
 func main() {
 	config := GetConfig()
-	lb := NewLoadBalancer(config)
+	serverRegistry := &ServerRegistry{}
+	serverRegistry.Seed()
 
+	healthChecker := NewHealthChecker(serverRegistry, config.HealthCheckConfig)
+	go healthChecker.Start()
+
+	lb := NewLoadBalancer(config, serverRegistry)
 	lb.Start()
 }

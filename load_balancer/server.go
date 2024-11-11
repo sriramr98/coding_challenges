@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -32,8 +33,8 @@ type Server struct {
 	isHealthy bool
 }
 
-func NewServer(host string, port int, timeout time.Duration) Server {
-	return Server{
+func NewServer(host string, port int, timeout time.Duration) *Server {
+	return &Server{
 		client: http.Client{
 			// Timeout: timeout,
 		},
@@ -44,7 +45,7 @@ func NewServer(host string, port int, timeout time.Duration) Server {
 
 func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 	reqUrl := fmt.Sprintf("http://%s:%d%s", s.host, s.port, req.Path)
-	fmt.Printf("Requesting: %s\n", reqUrl)
+	log.Printf("Requesting: %s\n", reqUrl)
 	request, err := http.NewRequest(req.Method, reqUrl, nil)
 	if err != nil {
 		return HttpRes{}, err
@@ -61,8 +62,6 @@ func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 		return HttpRes{}, err
 	}
 
-	fmt.Printf("Response status: %d\n", res.StatusCode)
-
 	resHeaders := []Header{}
 	for key, values := range res.Header {
 		resHeaders = append(resHeaders, Header{Key: key, Values: values})
@@ -77,12 +76,10 @@ func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 }
 
 func (s *Server) MarkIsUnHealthy() {
-	fmt.Println("Server is unhealthy")
 	s.isHealthy = false
 }
 
 func (s *Server) MarkIsHealthy() {
-	fmt.Println("Server is healthy")
 	s.isHealthy = true
 }
 
