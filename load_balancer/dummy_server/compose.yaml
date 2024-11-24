@@ -1,0 +1,27 @@
+services:
+  server1:
+    build:
+      context: .
+      target: final
+    environment:
+      SERVER_ID: 1
+    ports:
+      - 8001:8080
+
+  server2:
+    build:
+      context: .
+      target: final
+    environment:
+      SERVER_ID: 2
+    ports:
+      - 8002:8080
+
+  server3:
+    build:
+      context: .
+      target: final
+    environment:
+      SERVER_ID: 3
+    ports:
+      - 8003:8080
