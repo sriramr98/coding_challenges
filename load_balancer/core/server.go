@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"fmt"
@@ -16,16 +16,16 @@ type Header struct {
 }
 
 type HttpReq struct {
+	Body    io.Reader
 	Path    string
 	Method  string
 	Headers []Header
 }
 
 type HttpRes struct {
-	Body          io.ReadCloser
-	Headers       []Header
-	StatusCode    int
-	ContentLength int64
+	Body       io.ReadCloser
+	Headers    []Header
+	StatusCode int
 }
 
 type Server struct {
@@ -50,7 +50,7 @@ func NewServer(host string, port int, timeout time.Duration) *Server {
 func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 	reqUrl := fmt.Sprintf("http://%s:%d%s", s.host, s.port, req.Path)
 	log.Printf("Requesting: %s\n", reqUrl)
-	request, err := http.NewRequest(req.Method, reqUrl, nil)
+	request, err := http.NewRequest(req.Method, reqUrl, req.Body)
 	if err != nil {
 		return HttpRes{}, err
 	}
@@ -72,10 +72,9 @@ func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 	}
 
 	return HttpRes{
-		Headers:       resHeaders,
-		Body:          res.Body,
-		StatusCode:    res.StatusCode,
-		ContentLength: res.ContentLength,
+		Headers:    resHeaders,
+		Body:       res.Body,
+		StatusCode: res.StatusCode,
 	}, nil
 }
 
@@ -95,4 +94,8 @@ func (s *Server) IsHealthy() bool {
 
 func (s *Server) IsUnHealthy() bool {
 	return !s.isHealthy
+}
+
+func (s Server) GetID() string {
+	return s.id
 }

@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"log"
@@ -73,6 +73,8 @@ func (h HealthChecker) processFailedHealthCheck(server *Server) {
 	}
 
 	h.serverFailureCount[server.id]++
+	// reset success count for the server
+	h.serverSuccessCount[server.id] = 0
 
 	if server.IsUnHealthy() {
 		return
@@ -81,8 +83,6 @@ func (h HealthChecker) processFailedHealthCheck(server *Server) {
 	failCount := h.serverFailureCount[server.id]
 	if failCount >= h.config.UnHealthyTreshold {
 		server.MarkIsUnHealthy()
-		// reset success count for the server
-		h.serverSuccessCount[server.id] = 0
 	}
 }
 
@@ -92,6 +92,9 @@ func (h HealthChecker) processSuccessfulHealthCheck(server *Server) {
 	}
 
 	h.serverSuccessCount[server.id]++
+	// reset failure count for the server
+	h.serverFailureCount[server.id] = 0
+
 	if server.IsHealthy() {
 		return
 	}
@@ -99,7 +102,5 @@ func (h HealthChecker) processSuccessfulHealthCheck(server *Server) {
 	successCount := h.serverSuccessCount[server.id]
 	if successCount >= h.config.HealhyTreshold {
 		server.MarkIsHealthy()
-		// reset failure count for the server
-		h.serverFailureCount[server.id] = 0
 	}
 }

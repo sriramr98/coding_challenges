@@ -9,4 +9,4 @@ health_check:
     - 201
   healthy_treshold: 5
   unhealthy_treshold: 5
-  timeout: 5
+  timeout: 30

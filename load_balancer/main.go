@@ -1,13 +1,19 @@
 package main
 
-func main() {
-	config := GetConfig()
-	serverRegistry := &ServerRegistry{}
-	serverRegistry.Seed()
+import (
+	"github.com/sriramr98/load_balancer/core"
+	"github.com/sriramr98/load_balancer/strategies"
+)
 
-	healthChecker := NewHealthChecker(serverRegistry, config.HealthCheckConfig)
+func main() {
+	config := core.GetConfig()
+	serverRegistry := &core.ServerRegistry{}
+	serverRegistry.SeedHealthyServers(3)
+
+	healthChecker := core.NewHealthChecker(serverRegistry, config.HealthCheckConfig)
 	go healthChecker.Start()
 
-	lb := NewLoadBalancer(config, serverRegistry)
+	strategy := strategies.NewRoundRobinStrategy(serverRegistry)
+	lb := NewLoadBalancer(config, strategy)
 	lb.Start()
 }
