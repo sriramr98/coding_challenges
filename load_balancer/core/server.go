@@ -79,12 +79,10 @@ func (s Server) PerformHTTPRequest(req HttpReq) (HttpRes, error) {
 }
 
 func (s *Server) MarkIsUnHealthy() {
-	log.Printf("Server %s is unhealthy", s.id)
 	s.isHealthy = false
 }
 
 func (s *Server) MarkIsHealthy() {
-	log.Printf("Server %s is healthy", s.id)
 	s.isHealthy = true
 }
 

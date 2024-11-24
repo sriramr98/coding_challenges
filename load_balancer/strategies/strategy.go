@@ -1,7 +1,13 @@
 package strategies
 
-import "github.com/sriramr98/load_balancer/core"
+import (
+	"errors"
+
+	"github.com/sriramr98/load_balancer/core"
+)
+
+var ErrNoServersAvailable = errors.New("no servers available")
 
 type BalancingStrategy interface {
-	Next() (*core.Server, error)
+	Next(args ...interface{}) (*core.Server, error)
 }
