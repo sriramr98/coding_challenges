@@ -46,6 +46,7 @@ func main() {
 			w.Header().Set("hit", "invalid_path")
 			w.WriteHeader(http.StatusNotImplemented)
 			w.Write([]byte("invald path"))
+			return
 		}
 
 		w.Header().Set("hit", r.URL.Path)

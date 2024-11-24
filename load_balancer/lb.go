@@ -42,6 +42,7 @@ func (lb LoadBalancer) Start() {
 		}
 
 		server, err := lb.strategy.Next()
+		log.Printf("Reaching Server %s", server.GetID())
 		if err != nil {
 			log.Printf("Error: %s\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -51,14 +52,13 @@ func (lb LoadBalancer) Start() {
 
 		res, err := server.PerformHTTPRequest(httpReq)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Unable to reach server"))
 			return
 		}
 
 		for _, header := range res.Headers {
-			fmt.Printf("Header: %+v\n", header)
 			for _, value := range header.Values {
 				w.Header().Set(header.Key, value)
 			}
