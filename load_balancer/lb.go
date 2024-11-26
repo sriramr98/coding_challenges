@@ -1,14 +1,19 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"strings"
 
 	"github.com/sriramr98/load_balancer/core"
 	"github.com/sriramr98/load_balancer/strategies"
 )
+
+var ErrNoIPFound = errors.New("no IP Found in request")
 
 type LoadBalancer struct {
 	strategy strategies.BalancingStrategy
@@ -41,7 +46,15 @@ func (lb LoadBalancer) Start() {
 			Headers: headers,
 		}
 
-		server, err := lb.strategy.Next()
+		ip, err := extractIP(r)
+		if err != nil {
+			// We don't reject the request here because the RoutingStrategy will reject if Ip is required, else let it go through
+			log.Println(err.Error())
+		}
+
+		server, err := lb.strategy.Next(strategies.LBStrategyParams{
+			IpAddress: ip,
+		})
 		log.Printf("Reaching Server %s", server.GetID())
 		if err != nil {
 			log.Printf("Error: %s\n", err)
@@ -71,4 +84,33 @@ func (lb LoadBalancer) Start() {
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", lb.config.Port), nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func extractIP(r *http.Request) (string, error) {
+	ips := r.Header.Get("X-Forwarded-For")
+	splitIps := strings.Split(ips, ",")
+
+	if len(splitIps) > 0 {
+		// get last IP in list since ELB prepends other user defined IPs, meaning the last one is the actual client IP.
+		netIP := net.ParseIP(splitIps[len(splitIps)-1])
+		if netIP != nil {
+			return netIP.String(), nil
+		}
+	}
+
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", err
+	}
+
+	netIP := net.ParseIP(ip)
+	if netIP != nil {
+		ip := netIP.String()
+		if ip == "::1" {
+			return "127.0.0.1", nil
+		}
+		return ip, nil
+	}
+
+	return "", ErrNoIPFound
 }

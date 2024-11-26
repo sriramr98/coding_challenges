@@ -24,22 +24,17 @@ func NewIpHashStrategy(registry *core.ServerRegistry, hashStrategy hasher.Hasher
 	}
 }
 
-func (ip *IpHashStrategy) Next(args ...interface{}) (*core.Server, error) {
+func (ip *IpHashStrategy) Next(params LBStrategyParams) (*core.Server, error) {
 	healthyServers := ip.serverRegistry.GetHealthyServers()
 	if len(healthyServers) == 0 {
 		return nil, ErrNoServersAvailable
 	}
 
-	if len(args) == 0 || args[0] == nil {
+	if params.IpAddress == "" {
 		return nil, ErrNoIPFound
 	}
 
-	clientIP, ok := args[0].(string)
-	if !ok {
-		return nil, ErrIPNotString
-	}
-
-	hash := ip.hashStrategy.Hash(clientIP)
+	hash := ip.hashStrategy.Hash(params.IpAddress)
 
 	idx := hash % uint32(len(healthyServers))
 

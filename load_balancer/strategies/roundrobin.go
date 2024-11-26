@@ -13,7 +13,7 @@ func NewRoundRobinStrategy(serverRegistry *core.ServerRegistry) *RoundRobinStrat
 	return &RoundRobinStrategy{serverRegistry: serverRegistry}
 }
 
-func (r *RoundRobinStrategy) Next(_ ...interface{}) (*core.Server, error) {
+func (r *RoundRobinStrategy) Next(_ LBStrategyParams) (*core.Server, error) {
 	servers := r.serverRegistry.GetHealthyServers()
 	if len(servers) == 0 {
 		return &core.Server{}, ErrNoServersAvailable

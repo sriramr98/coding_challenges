@@ -26,7 +26,7 @@ func TestIpHashStrategyFailureScenarios(t *testing.T) {
 
 		ipHashStrategy := NewIpHashStrategy(registry, testHasher{})
 
-		server, err := ipHashStrategy.Next("testip")
+		server, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "testip"})
 		if err == nil {
 			t.Error("Expected error found nil")
 		}
@@ -46,7 +46,7 @@ func TestIpHashStrategyFailureScenarios(t *testing.T) {
 
 		ipHashStrategy := NewIpHashStrategy(registry, testHasher{})
 
-		server, err := ipHashStrategy.Next()
+		server, err := ipHashStrategy.Next(LBStrategyParams{})
 		if err == nil {
 			t.Error("Expected error found nil")
 		}
@@ -68,13 +68,13 @@ func TestIpHashStrategySuccessScenarios(t *testing.T) {
 
 		ipHashStrategy := NewIpHashStrategy(registry, testHasher{})
 
-		prevServer, err := ipHashStrategy.Next("testip")
+		prevServer, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "testip"})
 		if err != nil {
 			t.Errorf("Expected error to be nil, found %v", err.Error())
 		}
 
 		for i := 0; i < 5; i++ {
-			server, err := ipHashStrategy.Next("testip")
+			server, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "testip"})
 			if err != nil {
 				t.Errorf("Expected error to be nil found %v", err.Error())
 			}
@@ -95,7 +95,7 @@ func TestIpHashStrategySuccessScenarios(t *testing.T) {
 
 		ipHashStrategy := NewIpHashStrategy(registry, testHasher{})
 
-		server1, err := ipHashStrategy.Next("test1")
+		server1, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "test1"})
 		if err != nil {
 			t.Errorf("Expected error to be nil, found %v", err.Error())
 		}
@@ -103,7 +103,7 @@ func TestIpHashStrategySuccessScenarios(t *testing.T) {
 			t.Error("Expected server, got nil")
 		}
 
-		server2, err := ipHashStrategy.Next("test2")
+		server2, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "test2"})
 		if err != nil {
 			t.Errorf("Expected error to be nil, found %v", err.Error())
 		}
@@ -111,7 +111,7 @@ func TestIpHashStrategySuccessScenarios(t *testing.T) {
 			t.Error("Expected different server ids for test1 and test2, but got same server")
 		}
 
-		server3, err := ipHashStrategy.Next("test3")
+		server3, err := ipHashStrategy.Next(LBStrategyParams{IpAddress: "test3"})
 		if err != nil {
 			t.Errorf("Expected error to be nil, found %v", err.Error())
 		}

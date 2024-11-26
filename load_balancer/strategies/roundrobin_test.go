@@ -6,6 +6,8 @@ import (
 	"github.com/sriramr98/load_balancer/core"
 )
 
+var lbParams = LBStrategyParams{}
+
 func TestRoundRobinStrategyErrorScenarios(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -25,7 +27,7 @@ func TestRoundRobinStrategyErrorScenarios(t *testing.T) {
 
 			strategy := NewRoundRobinStrategy(serverRegistry)
 
-			_, err := strategy.Next()
+			_, err := strategy.Next(lbParams)
 			if err == nil {
 				t.Error(test.message)
 			}
@@ -39,7 +41,7 @@ func TestRoundRobinStrategySuccessScenarios(t *testing.T) {
 		serverRegistry.SeedHealthyServers(3)
 		strategy := NewRoundRobinStrategy(serverRegistry)
 		for i := 0; i < 6; i++ {
-			server, err := strategy.Next()
+			server, err := strategy.Next(lbParams)
 			if err != nil {
 				t.Error("Unexpected error")
 			}
@@ -66,7 +68,7 @@ func TestRoundRobinStrategySuccessScenarios(t *testing.T) {
 		}
 
 		for i := 0; i < 12; i++ {
-			server, err := strategy.Next()
+			server, err := strategy.Next(lbParams)
 			if err != nil {
 				t.Error("Should be getting a valid server, not error")
 			}

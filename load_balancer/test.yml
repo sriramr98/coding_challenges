@@ -1,6 +1,6 @@
 http_version: 1
 protocol: http
-balance_strategy: round-robin
+balance_strategy: ip-hash
 port: 3000
 health_check:
   path: /health

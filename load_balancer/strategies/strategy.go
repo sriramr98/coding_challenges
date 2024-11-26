@@ -8,6 +8,10 @@ import (
 
 var ErrNoServersAvailable = errors.New("no servers available")
 
+type LBStrategyParams struct {
+	IpAddress string
+}
+
 type BalancingStrategy interface {
-	Next(args ...interface{}) (*core.Server, error)
+	Next(params LBStrategyParams) (*core.Server, error)
 }
