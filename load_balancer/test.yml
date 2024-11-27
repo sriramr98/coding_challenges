@@ -10,3 +10,6 @@ health_check:
   healthy_treshold: 5
   unhealthy_treshold: 5
   timeout: 30
+tls:
+  cert: keys/localhost.pem
+  key: keys/localhost-key.pem
