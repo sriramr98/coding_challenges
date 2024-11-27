@@ -74,7 +74,7 @@ func (lb *LoadBalancer) Start() {
 	lb.listenAndInitiateGracefulShutdown(server)
 }
 
-func (lb LoadBalancer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (lb *LoadBalancer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	lb.requestsWg.Add(1)
 	defer lb.requestsWg.Done()
 
