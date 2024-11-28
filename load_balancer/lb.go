@@ -16,19 +16,19 @@ import (
 	"time"
 
 	"github.com/sriramr98/load_balancer/core"
-	"github.com/sriramr98/load_balancer/strategies"
+	"github.com/sriramr98/load_balancer/routers"
 )
 
 var ErrNoIPFound = errors.New("no IP Found in request")
 
 type LoadBalancer struct {
 	requestsWg            *sync.WaitGroup
-	strategy              strategies.BalancingStrategy
+	strategy              routers.BalancingStrategy
 	config                core.Config
 	shouldProcessRequests int32 // 0 if should process, 1 if should not process. Used for graceful shutdown
 }
 
-func NewLoadBalancer(config core.Config, strategy strategies.BalancingStrategy) LoadBalancer {
+func NewLoadBalancer(config core.Config, strategy routers.BalancingStrategy) LoadBalancer {
 	return LoadBalancer{
 		config:                config,
 		strategy:              strategy,
@@ -109,7 +109,7 @@ func (lb *LoadBalancer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 	}
 
-	server, err := lb.strategy.Next(strategies.LBStrategyParams{
+	server, err := lb.strategy.Next(routers.LBStrategyParams{
 		IpAddress: ip,
 	})
 	log.Printf("Reaching Server %s", server.GetID())

@@ -1,4 +1,4 @@
-package strategies
+package routers
 
 import (
 	"github.com/sriramr98/load_balancer/core"

@@ -5,16 +5,16 @@ import (
 
 	"github.com/sriramr98/load_balancer/core"
 	"github.com/sriramr98/load_balancer/hasher"
-	"github.com/sriramr98/load_balancer/strategies"
+	"github.com/sriramr98/load_balancer/routers"
 )
 
-func GetValidStrategy(strategy string, serverRegistry *core.ServerRegistry) strategies.BalancingStrategy {
+func GetValidStrategy(strategy string, serverRegistry *core.ServerRegistry) routers.BalancingStrategy {
 	if strategy == "round-robin" {
-		return strategies.NewRoundRobinStrategy(serverRegistry)
+		return routers.NewRoundRobinStrategy(serverRegistry)
 	}
 
 	if strategy == "ip-hash" {
-		return strategies.NewIpHashStrategy(serverRegistry, hasher.FnvHasher{})
+		return routers.NewIpHashStrategy(serverRegistry, hasher.FnvHasher{})
 	}
 
 	panic(fmt.Sprintf("Invalid strategy: %s", strategy))
